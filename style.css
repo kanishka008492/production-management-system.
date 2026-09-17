@@ -83,3 +83,6 @@ button:hover {
         grid-template-columns: repeat(2, 1fr);
     }
 }
+#orders p {
+    font-weight: normal;
+}
