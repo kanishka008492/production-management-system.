@@ -1,1 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production Management System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 
+<body>
+
+    <header>
+        <h1>Production Management System</h1>
+        <p>Smart Production Tracking</p>
+    </header>
+
+    <main>
+
+        <section class="dashboard">
+            <div class="card">
+                <h3>Total Orders</h3>
+                <p id="totalOrders">0</p>
+            </div>
+
+            <div class="card">
+                <h3>In Progress</h3>
+                <p id="inProgress">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Completed</h3>
+                <p id="completed">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Overdue</h3>
+                <p id="overdue">0</p>
+            </div>
+        </section>
+
+        <section class="production-section">
+            <h2>Production Orders</h2>
+
+            <button onclick="createOrder()">Create Production Order</button>
+
+            <div id="orders"></div>
+        </section>
+
+    </main>
+
+    <script src="storage.js"></script>
+    <script src="script.js"></script>
+
+</body>
+</html>
