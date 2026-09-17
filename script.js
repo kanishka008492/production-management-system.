@@ -1,39 +1,51 @@
 let orders = loadOrders();
 
 function createOrder() {
-    const product = prompt("Enter product name:");
-    const required = Number(prompt("Enter required quantity:"));
+    let product = prompt("Enter product name:");
+    let required = Number(prompt("Enter required quantity:"));
 
-    if (!product || !required || required <= 0) {
-        alert("Please enter valid details.");
+    if (!product || required <= 0) {
+        alert("Invalid input");
         return;
     }
 
-    const order = {
+    orders.push({
         id: Date.now(),
         product: product,
         required: required,
         completed: 0,
         status: "In Progress"
-    };
+    });
 
-    orders.push(order);
+    saveOrders(orders);
+    displayOrders();
+}
+
+function updateProduction(id) {
+    let order = orders.find(o => o.id === id);
+
+    order.completed += 100;
+
+    if (order.completed >= order.required) {
+        order.completed = order.required;
+        order.status = "Completed";
+    }
+
     saveOrders(orders);
     displayOrders();
 }
 
 function displayOrders() {
-    const ordersDiv = document.getElementById("orders");
-
-    ordersDiv.innerHTML = "";
+    let box = document.getElementById("orders");
+    box.innerHTML = "";
 
     orders.forEach(order => {
-        const remaining = order.required - order.completed;
-        const progress = Math.round(
+        let remaining = order.required - order.completed;
+        let progress = Math.round(
             (order.completed / order.required) * 100
         );
 
-        ordersDiv.innerHTML += `
+        box.innerHTML += `
             <div class="card">
                 <h3>${order.product}</h3>
                 <p>Required: ${order.required}</p>
@@ -41,23 +53,23 @@ function displayOrders() {
                 <p>Remaining: ${remaining}</p>
                 <p>Progress: ${progress}%</p>
                 <p>Status: ${order.status}</p>
+
+                ${order.status !== "Completed"
+                    ? `<button onclick="updateProduction(${order.id})">
+                        Update Production
+                       </button>`
+                    : ""}
             </div>
         `;
     });
 
-    updateDashboard();
-}
-
-function updateDashboard() {
     document.getElementById("totalOrders").textContent = orders.length;
 
     document.getElementById("inProgress").textContent =
-        orders.filter(order => order.status === "In Progress").length;
+        orders.filter(o => o.status === "In Progress").length;
 
     document.getElementById("completed").textContent =
-        orders.filter(order => order.status === "Completed").length;
-
-    document.getElementById("overdue").textContent = 0;
+        orders.filter(o => o.status === "Completed").length;
 }
 
 displayOrders();
