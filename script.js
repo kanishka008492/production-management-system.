@@ -1,10 +1,11 @@
 let orders = loadOrders();
 
 function createOrder() {
-    let product = prompt("Enter product name:");
-    let required = Number(prompt("Enter required quantity:"));
+    let product = prompt("Product:");
+    let required = Number(prompt("Quantity:"));
+    let deadline = prompt("Deadline (YYYY-MM-DD):");
 
-    if (!product || required <= 0) {
+    if (!product || required <= 0 || !deadline) {
         alert("Invalid input");
         return;
     }
@@ -14,21 +15,18 @@ function createOrder() {
         product: product,
         required: required,
         completed: 0,
-        status: "In Progress"
+        deadline: deadline
     });
 
     saveOrders(orders);
     displayOrders();
 }
 
-function updateProduction(id) {
-    let order = orders.find(o => o.id === id);
+function updateProduction(i) {
+    orders[i].completed += 100;
 
-    order.completed += 100;
-
-    if (order.completed >= order.required) {
-        order.completed = order.required;
-        order.status = "Completed";
+    if (orders[i].completed >= orders[i].required) {
+        orders[i].completed = orders[i].required;
     }
 
     saveOrders(orders);
@@ -39,26 +37,33 @@ function displayOrders() {
     let box = document.getElementById("orders");
     box.innerHTML = "";
 
-    orders.forEach(order => {
-        let remaining = order.required - order.completed;
-        let progress = Math.round(
-            (order.completed / order.required) * 100
-        );
+    orders.forEach((o, i) => {
+
+        let remaining = o.required - o.completed;
+        let progress = Math.round(o.completed / o.required * 100);
+
+        let status = "In Progress";
+
+        if (progress == 100) {
+            status = "Completed";
+        } else if (new Date(o.deadline) < new Date()) {
+            status = "Overdue";
+        }
 
         box.innerHTML += `
             <div class="card">
-                <h3>${order.product}</h3>
-                <p>Required: ${order.required}</p>
-                <p>Completed: ${order.completed}</p>
+                <h3>${o.product}</h3>
+                <p>Required: ${o.required}</p>
+                <p>Completed: ${o.completed}</p>
                 <p>Remaining: ${remaining}</p>
                 <p>Progress: ${progress}%</p>
-                <p>Status: ${order.status}</p>
+                <p>Deadline: ${o.deadline}</p>
+                <p>Status: ${status}</p>
 
-                ${order.status !== "Completed"
-                    ? `<button onclick="updateProduction(${order.id})">
-                        Update Production
-                       </button>`
-                    : ""}
+                ${progress < 100 ?
+                `<button onclick="updateProduction(${i})">
+                    Update Production
+                </button>` : ""}
             </div>
         `;
     });
@@ -66,10 +71,15 @@ function displayOrders() {
     document.getElementById("totalOrders").textContent = orders.length;
 
     document.getElementById("inProgress").textContent =
-        orders.filter(o => o.status === "In Progress").length;
+        orders.filter(o => o.completed < o.required &&
+        new Date(o.deadline) >= new Date()).length;
 
     document.getElementById("completed").textContent =
-        orders.filter(o => o.status === "Completed").length;
+        orders.filter(o => o.completed >= o.required).length;
+
+    document.getElementById("overdue").textContent =
+        orders.filter(o => o.completed < o.required &&
+        new Date(o.deadline) < new Date()).length;
 }
 
 displayOrders();
