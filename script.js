@@ -34,11 +34,13 @@ function updateProduction(i) {
 }
 
 function displayOrders() {
-    let box = document.getElementById("orders");
-    box.innerHTML = "";
+    let progressBox = document.getElementById("inProgressOrders");
+    let completedBox = document.getElementById("completedOrders");
+
+    progressBox.innerHTML = "";
+    completedBox.innerHTML = "";
 
     orders.forEach((o, i) => {
-
         let remaining = o.required - o.completed;
         let progress = Math.round(o.completed / o.required * 100);
 
@@ -50,7 +52,7 @@ function displayOrders() {
             status = "Overdue";
         }
 
-        box.innerHTML += `
+        let order = `
             <div class="card">
                 <h3>${o.product}</h3>
                 <p>Required: ${o.required}</p>
@@ -66,20 +68,27 @@ function displayOrders() {
                 </button>` : ""}
             </div>
         `;
+
+        if (progress == 100) {
+            completedBox.innerHTML += order;
+        } else {
+            progressBox.innerHTML += order;
+        }
     });
 
     document.getElementById("totalOrders").textContent = orders.length;
 
     document.getElementById("inProgress").textContent =
-        orders.filter(o => o.completed < o.required &&
-        new Date(o.deadline) >= new Date()).length;
+        orders.filter(o => o.completed < o.required).length;
 
     document.getElementById("completed").textContent =
         orders.filter(o => o.completed >= o.required).length;
 
     document.getElementById("overdue").textContent =
-        orders.filter(o => o.completed < o.required &&
-        new Date(o.deadline) < new Date()).length;
+        orders.filter(o =>
+            o.completed < o.required &&
+            new Date(o.deadline) < new Date()
+        ).length;
 }
 
 displayOrders();
